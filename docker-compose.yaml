@@ -1,0 +1,18 @@
+services:
+  test-app-1:
+    build: .
+    ports: 
+      - "8080:8080"
+
+  test-app-2:
+    build: .
+    ports: 
+      - "8081:8080"
+
+  nginx:
+    build: ./nginx
+    ports:
+      - "3000:3000"
+    depends_on:
+      - "test-app-1"
+      - "test-app-2"
