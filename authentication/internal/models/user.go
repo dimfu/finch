@@ -5,9 +5,9 @@ import (
 	"strings"
 	"time"
 
+	"github.com/dimfu/finch/services/internal/db"
 	"github.com/guregu/null"
 	"github.com/jackc/pgx/v5"
-	"github.com/jackc/pgx/v5/pgxpool"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -36,7 +36,8 @@ func (u *User) ValidateCreds() map[string]string {
 	return errors
 }
 
-func (u *User) FindByUsername(db *pgxpool.Pool) (*User, error) {
+func (u *User) FindByUsername() (*User, error) {
+	db := db.Pool
 	var user User
 	ctx := context.Background()
 	err := db.QueryRow(ctx, `
@@ -63,7 +64,8 @@ func (u *User) CompareHashAndPassword() error {
 	return nil
 }
 
-func (u *User) Create(db *pgxpool.Pool) error {
+func (u *User) Create() error {
+	db := db.Pool
 	// TODO: more strict sanitization
 	hash, err := bcrypt.GenerateFromPassword([]byte(u.Password), bcrypt.DefaultCost)
 	if err != nil {

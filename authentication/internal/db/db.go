@@ -11,6 +11,8 @@ import (
 	_ "github.com/lib/pq"
 )
 
+var Pool *pgxpool.Pool
+
 type config struct {
 	POSTGRES_USER     string
 	POSTGRES_PASSWORD string
@@ -37,10 +39,10 @@ func getConfig() (*config, error) {
 	return &cfg, nil
 }
 
-func New() (*pgxpool.Pool, error) {
+func Connect() error {
 	cfg, err := getConfig()
 	if err != nil {
-		return nil, err
+		return err
 	}
 
 	url := fmt.Sprintf("postgres://%s:%s@localhost:5432/%s",
@@ -50,15 +52,15 @@ func New() (*pgxpool.Pool, error) {
 	)
 
 	ctx := context.Background()
-	pool, err := pgxpool.New(ctx, url)
+	Pool, err = pgxpool.New(ctx, url)
 
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	if err := pool.Ping(ctx); err != nil {
-		return nil, err
+	if err := Pool.Ping(ctx); err != nil {
+		return err
 	}
 
-	return pool, nil
+	return nil
 }

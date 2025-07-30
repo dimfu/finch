@@ -9,34 +9,24 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/dimfu/finch/authentication/controllers"
-	"github.com/dimfu/finch/authentication/db"
+	"github.com/dimfu/finch/services/internal/db"
 	"github.com/gin-gonic/gin"
-	"github.com/jackc/pgx/v5/pgxpool"
 )
 
-func DBMiddleware(db *pgxpool.Pool) gin.HandlerFunc {
-	return func(c *gin.Context) {
-		c.Set("db", db)
-		c.Next()
+func init() {
+	if err := db.Connect(); err != nil {
+		panic(err)
 	}
 }
 
 func main() {
-	db, err := db.New()
-	if err != nil {
-		panic(err)
-	}
-
 	router := gin.Default()
-
-	// middlewares
-	router.Use(DBMiddleware(db))
 
 	// main routes
 	auth := router.Group("auth")
-	auth.POST("/signup", controllers.Signup)
-	auth.POST("/signin", controllers.Signin)
+	auth.POST("/signup", Signup)
+	auth.POST("/signin", Signin)
+	auth.POST("/refresh", Refresh)
 
 	sigchan := make(chan os.Signal, 1)
 	signal.Notify(sigchan, syscall.SIGINT, syscall.SIGABRT)
