@@ -9,7 +9,7 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/dimfu/finch/services/internal/db"
+	"github.com/dimfu/finch/authentication/db"
 	"github.com/gin-gonic/gin"
 )
 

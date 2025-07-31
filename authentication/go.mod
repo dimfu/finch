@@ -1,4 +1,4 @@
-module github.com/dimfu/finch/services
+module github.com/dimfu/finch/authentication
 
 go 1.23.10
 

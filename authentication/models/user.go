@@ -5,7 +5,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/dimfu/finch/services/internal/db"
+	"github.com/dimfu/finch/authentication/db"
 	"github.com/guregu/null"
 	"github.com/jackc/pgx/v5"
 	"golang.org/x/crypto/bcrypt"

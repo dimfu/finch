@@ -6,7 +6,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/dimfu/finch/services/internal/models"
+	"github.com/dimfu/finch/authentication/models"
 	"github.com/golang-jwt/jwt/v5"
 )
 

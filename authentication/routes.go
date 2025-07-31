@@ -6,8 +6,8 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/dimfu/finch/services/internal/jwt"
-	"github.com/dimfu/finch/services/internal/models"
+	"github.com/dimfu/finch/authentication/jwt"
+	"github.com/dimfu/finch/authentication/models"
 	"github.com/gin-gonic/gin"
 	"github.com/jackc/pgerrcode"
 	"github.com/jackc/pgx/v5"

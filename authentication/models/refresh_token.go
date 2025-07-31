@@ -3,7 +3,7 @@ package models
 import (
 	"context"
 
-	"github.com/dimfu/finch/services/internal/db"
+	"github.com/dimfu/finch/authentication/db"
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
 )
