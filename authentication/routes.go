@@ -8,7 +8,9 @@ import (
 
 	"github.com/dimfu/finch/authentication/jwt"
 	"github.com/dimfu/finch/authentication/models"
+	"github.com/dimfu/finch/authentication/utils"
 	"github.com/gin-gonic/gin"
+	"github.com/go-playground/validator/v10"
 	"github.com/jackc/pgerrcode"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgconn"
@@ -25,18 +27,33 @@ func SignUp(ctx *gin.Context) {
 
 	}
 	if err := user.Create(); err != nil {
-		var e *pgconn.PgError
-		if errors.As(err, &e) && e.Code == pgerrcode.UniqueViolation {
-			ctx.JSON(http.StatusInternalServerError, gin.H{
-				"error": "User already exist.",
+		switch e := err.(type) {
+		case *pgconn.PgError:
+			if e.Code == pgerrcode.UniqueViolation {
+				ctx.JSON(http.StatusInternalServerError, gin.H{
+					"error": "User already exist.",
+				})
+				return
+			}
+		case validator.ValidationErrors:
+			errorsMap := make(map[string]string)
+			for _, fieldErr := range e {
+				errorsMap[fieldErr.Field()] = utils.GenerateValidationMessage(fieldErr)
+			}
+
+			ctx.JSON(http.StatusBadRequest, gin.H{
+				"error":  "Validation failed",
+				"fields": errorsMap,
 			})
 			return
+		default:
+			ctx.JSON(http.StatusInternalServerError, gin.H{
+				"error": "Internal server error",
+			})
+			ctx.Error(err)
+			return
 		}
-		ctx.JSON(http.StatusInternalServerError, gin.H{
-			"error": "Internal server error",
-		})
-		ctx.Error(err)
-		return
+
 	}
 
 	ctx.JSON(http.StatusOK, gin.H{"message": "User created successfully"})
