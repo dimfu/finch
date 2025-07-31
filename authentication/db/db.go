@@ -14,9 +14,10 @@ import (
 var Pool *pgxpool.Pool
 
 type config struct {
+	DB_HOST           string
 	POSTGRES_USER     string
 	POSTGRES_PASSWORD string
-	POSTGRES_DBNAME   string
+	POSTGRES_DB       string
 }
 
 func getConfig() (*config, error) {
@@ -45,10 +46,11 @@ func Connect() error {
 		return err
 	}
 
-	url := fmt.Sprintf("postgres://%s:%s@localhost:5432/%s",
+	url := fmt.Sprintf("postgres://%s:%s@%s:5432/%s",
 		cfg.POSTGRES_USER,
 		cfg.POSTGRES_PASSWORD,
-		cfg.POSTGRES_DBNAME,
+		cfg.DB_HOST,
+		cfg.POSTGRES_DB,
 	)
 
 	ctx := context.Background()

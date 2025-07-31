@@ -88,7 +88,6 @@ func (u *User) CompareHashAndPassword() error {
 
 func (u *User) Create() error {
 	db := db.Pool
-	// TODO: more strict sanitization
 
 	if err := u.ValidateStruct(); err != nil {
 		return err

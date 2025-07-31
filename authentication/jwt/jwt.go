@@ -15,7 +15,7 @@ var SECRET_KEY = []byte(os.Getenv("SECRET_KEY"))
 var (
 	ACCESS_LIFETIME_DURATION  = 1 * time.Hour
 	REFRESH_LIFETIME_DURATION = 90 * 24 * time.Hour
-	NO_SECRET_KEY             = errors.New("Error key environment is not set")
+	NO_SECRET_KEY             = errors.New("Error secret key environment is not set")
 )
 
 type Token struct {
