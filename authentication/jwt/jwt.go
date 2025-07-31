@@ -24,6 +24,17 @@ type Token struct {
 	RefreshToken string
 }
 
+func BuildRefreshToken(token string) (*models.RefreshToken, error) {
+	user, err := ValidateRefreshToken(token)
+	if err != nil {
+		return nil, err
+	}
+	return &models.RefreshToken{
+		UserID:    user.ID,
+		TokenHash: token,
+	}, nil
+}
+
 func (t *Token) ToRefreshToken() *models.RefreshToken {
 	return &models.RefreshToken{
 		UserID:    t.UserID,

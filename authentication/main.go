@@ -24,9 +24,10 @@ func main() {
 
 	// main routes
 	auth := router.Group("auth")
-	auth.POST("/signup", Signup)
-	auth.POST("/signin", Signin)
+	auth.POST("/signup", SignUp)
+	auth.POST("/signin", SignIn)
 	auth.POST("/refresh", Refresh)
+	auth.GET("/signout", SignOut)
 
 	sigchan := make(chan os.Signal, 1)
 	signal.Notify(sigchan, syscall.SIGINT, syscall.SIGABRT)

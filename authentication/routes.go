@@ -14,7 +14,7 @@ import (
 	"github.com/jackc/pgx/v5/pgconn"
 )
 
-func Signup(ctx *gin.Context) {
+func SignUp(ctx *gin.Context) {
 	var user models.User
 	if err := ctx.BindJSON(&user); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
@@ -42,7 +42,7 @@ func Signup(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, gin.H{"message": "User created successfully"})
 }
 
-func Signin(ctx *gin.Context) {
+func SignIn(ctx *gin.Context) {
 	user := &models.User{}
 	if err := ctx.BindJSON(user); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
@@ -171,4 +171,39 @@ func Refresh(ctx *gin.Context) {
 		true, // secure (set to false if developing over HTTP)
 		true, // httpOnly — important!
 	)
+	ctx.JSON(http.StatusOK, gin.H{"message": "Token refreshed"})
 }
+
+func SignOut(ctx *gin.Context) {
+	token, err := ctx.Cookie("refresh_token")
+	if err != nil || len(token) == 0 {
+		ctx.JSON(http.StatusUnauthorized, gin.H{
+			"error": "Refresh token not found",
+		})
+		return
+	}
+
+	refreshToken, err := jwt.BuildRefreshToken(token)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"error": "Internal server error",
+		})
+		ctx.Error(err)
+		return
+	}
+
+	if err := refreshToken.RevokeByHash(); err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"error": "Internal server error",
+		})
+		ctx.Error(err)
+		return
+	}
+
+	ctx.SetCookie("access_token", "", 0, "/", "", true, true)
+	ctx.SetCookie("refresh_token", "", 0, "/", "", true, true)
+
+	ctx.JSON(http.StatusOK, gin.H{"message": "Logged out successfully"})
+}
+
+// TODO: Implement session list endpoint in the near future

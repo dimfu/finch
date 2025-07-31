@@ -27,6 +27,19 @@ func (r *RefreshToken) Insert() error {
 	return nil
 }
 
+func (r *RefreshToken) RevokeByHash() error {
+	db := db.Pool
+	ctx := context.Background()
+	if _, err := db.Exec(ctx,
+		`UPDATE refresh_tokens SET revoked = TRUE WHERE token_hash = $1`, r.TokenHash,
+	); err != nil {
+		return err
+	}
+	return nil
+}
+
+// TODO: Add delete refresh tuple method once we have the session list ui for it
+
 func (r *RefreshToken) CreateOrUpdate(prevToken string) error {
 	db := db.Pool
 	ctx := context.Background()
