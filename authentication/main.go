@@ -23,7 +23,7 @@ func main() {
 	router := gin.Default()
 
 	// main routes
-	auth := router.Group("auth")
+	auth := router.Group("/api/auth")
 	auth.POST("/signup", SignUp)
 	auth.POST("/signin", SignIn)
 	auth.POST("/refresh", Refresh)
