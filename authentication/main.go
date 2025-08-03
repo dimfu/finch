@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/dimfu/finch/authentication/db"
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
 
@@ -21,8 +22,17 @@ func init() {
 
 func main() {
 	router := gin.Default()
+	if os.Getenv("ENV_MODE") == "development" {
+		config := cors.Config{
+			AllowOrigins:     []string{"http://localhost:3000"},
+			AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+			AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
+			AllowCredentials: true,
+			MaxAge:           12 * time.Hour,
+		}
+		router.Use(cors.New(config))
+	}
 
-	// main routes
 	auth := router.Group("/api/auth")
 	auth.POST("/signup", SignUp)
 	auth.POST("/signin", SignIn)

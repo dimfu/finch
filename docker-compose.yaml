@@ -12,7 +12,11 @@ services:
       - ".env"
     # To be sure to run migrations only when postgres is ready to receive connections
     healthcheck:
-      test: [ "CMD-SHELL", "sh -c 'pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}'" ]
+      test:
+        [
+          "CMD-SHELL",
+          "sh -c 'pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}'",
+        ]
       interval: 10s
       timeout: 1s
       retries: 5
@@ -44,15 +48,28 @@ services:
   authentication-service:
     env_file:
       - ".env"
-    build: 
+    build:
       dockerfile: "./images/authentication.Dockerfile"
       context: "."
-    ports: 
+    ports:
       - "8080:8080"
     networks:
       - backend
     depends_on:
       - "authentication-db"
+
+  client:
+    env_file:
+      - ".env"
+    build:
+      dockerfile: "./images/client.Dockerfile"
+      context: "."
+    ports:
+      - "8081:8081"
+    networks:
+      - backend
+    depends_on:
+      - "authentication-service"
 
   nginx:
     build:

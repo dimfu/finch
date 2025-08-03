@@ -1,1 +1,0 @@
-Pinia stores should live here

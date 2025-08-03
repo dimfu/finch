@@ -1,1 +1,7 @@
 .git
+
+# unused client files
+**/node_modules
+client/.env
+client/.env.*
+client/.output
