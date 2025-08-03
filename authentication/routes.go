@@ -223,4 +223,25 @@ func SignOut(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, gin.H{"message": "Logged out successfully"})
 }
 
+func Me(ctx *gin.Context) {
+	token, err := ctx.Cookie("access_token")
+	if err != nil || len(token) == 0 {
+		ctx.JSON(http.StatusUnauthorized, gin.H{
+			"error": "Access token not found",
+		})
+		return
+	}
+
+	user, err := jwt.ValidateAccessToken(token)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"error": "Internal server error",
+		})
+		ctx.Error(err)
+		return
+	}
+	
+	ctx.JSON(http.StatusOK, gin.H{"userId": user.ID})
+}
+
 // TODO: Implement session list endpoint in the near future

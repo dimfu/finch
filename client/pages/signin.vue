@@ -1,6 +1,5 @@
 <template>
   <div class="md:hidden"></div>
-
   <div
     class="container relative hidden h-[800px] flex-col items-center justify-center md:grid lg:max-w-none lg:grid-cols-2 lg:px-0"
   >
@@ -50,17 +49,14 @@ import Button from "~/components/ui/button/Button.vue";
 
 import { useAuthStore } from "~/store/auth";
 
+const authStore = useAuthStore();
+
 const username = ref("");
 const password = ref("");
 
-const auth = useAuthStore();
-
 async function handleSubmit() {
   try {
-    const result = await auth.signin(username.value, password.value);
-    if (result.success) {
-      console.log(auth.token);
-    }
+    await authStore.signin(username.value, password.value);
   } catch (error) {
     console.error(error);
   }

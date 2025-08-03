@@ -22,7 +22,6 @@ func init() {
 
 func main() {
 	router := gin.Default()
-	if os.Getenv("ENV_MODE") == "development" {
 		config := cors.Config{
 			AllowOrigins:     []string{"http://localhost:3000"},
 			AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
@@ -30,14 +29,13 @@ func main() {
 			AllowCredentials: true,
 			MaxAge:           12 * time.Hour,
 		}
-		router.Use(cors.New(config))
-	}
-
+	router.Use(cors.New(config))
 	auth := router.Group("/api/auth")
 	auth.POST("/signup", SignUp)
 	auth.POST("/signin", SignIn)
 	auth.POST("/refresh", Refresh)
 	auth.GET("/signout", SignOut)
+	auth.GET("/me", Me)
 
 	sigchan := make(chan os.Signal, 1)
 	signal.Notify(sigchan, syscall.SIGINT, syscall.SIGABRT)

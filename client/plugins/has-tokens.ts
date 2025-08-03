@@ -7,13 +7,6 @@ export default defineNuxtPlugin(async (app) => {
 
   // initialize user's token if available on the http cookie
   if (accessToken.value && refreshToken.value) {
-    authStore.setToken({
-      accessToken: accessToken.value,
-      refreshToken: refreshToken.value,
-    });
-    const tokenIsValid = await authStore.tokenIsValid();
-    if (tokenIsValid) {
-      authStore.isAuthenticated = true;
-    }
+    authStore.$state.hasToken = true;
   }
 });

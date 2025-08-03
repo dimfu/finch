@@ -4,37 +4,29 @@ interface User {
   id: string;
 }
 
-interface Token {
-  accessToken: string;
-  refreshToken: string;
-}
-
 interface AuthState {
   user?: User;
-  token?: Token;
+  hasToken: boolean;
   isAuthenticated: boolean;
 }
 
 export const useAuthStore = defineStore("auth", {
   state: (): AuthState => ({
     user: undefined,
+    hasToken: false,
     isAuthenticated: false,
-    token: undefined,
   }),
 
   actions: {
-    setToken(token: Token) {
-      this.token = token;
-    },
-
-    // to check if token is expired or broken
-    async tokenIsValid(): Promise<boolean> {
-      return true;
+    setUser(userId: string) {
+      this.user = {
+        id: userId,
+      };
+      this.isAuthenticated = true;
     },
 
     async signin(username: string, password: string) {
       const config = useRuntimeConfig();
-      console.log(config.public.authUrl);
       try {
         const response = await $fetch(
           `${config.public.authUrl}/api/auth/signin`,
@@ -49,9 +41,9 @@ export const useAuthStore = defineStore("auth", {
           }
         );
 
-        return { error: undefined, success: true };
+        return navigateTo("/", { external: true });
       } catch (error: any) {
-        return { error, success: false };
+        return navigateTo("/signin");
       }
     },
 
@@ -59,12 +51,37 @@ export const useAuthStore = defineStore("auth", {
       const config = useRuntimeConfig();
       try {
         const response = await $fetch(
-          `${config.public.authUrl}/api/auth/signin`,
+          `${config.public.authUrl}/api/auth/signout`,
           {
             method: "GET",
             credentials: "include",
           }
         );
+        // clear the auth store states
+        this.$reset;
+      } catch (error: any) {
+        console.error(error);
+      }
+      return navigateTo("/", { external: true });
+    },
+
+    async checkAuth() {
+      // do nothing if there is no tokens inside http-coochie
+      if (!this.hasToken) {
+        return { error: "No tokens provided", success: false };
+      }
+
+      const config = useRuntimeConfig();
+
+      try {
+        const response = await $fetch<{ userId: string }>(
+          `${config.public.authUrl}/api/auth/me`,
+          {
+            method: "GET",
+            credentials: "include",
+          }
+        );
+        this.setUser(response.userId);
         return { error: undefined, success: true };
       } catch (error: any) {
         return { error, success: false };
